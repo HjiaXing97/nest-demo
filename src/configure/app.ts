@@ -1,5 +1,5 @@
 export default () => ({
   app: {
-    name: 'hjx'
+    name: 'APP_NAME'
   }
 });

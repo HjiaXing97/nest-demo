@@ -1,23 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import path from 'path';
 import { readdirSync } from 'fs';
 
 @Injectable()
 export class ConfigService {
-  config = {};
-
-  constructor() {
-    const config = {
-      path: path.resolve(__dirname, '../configure')
-    };
-
-    readdirSync(config.path).map(async (file) => {
+  constructor(
+    @Inject('CONFIG_OPTIONS')
+    private options: { path: string },
+    @Optional() private config = {}
+  ) {
+    readdirSync(options.path).map(async (file) => {
       if (file.slice(-2) === 'js') {
-        const module = await import(path.resolve(config.path, file));
+        const module = await import(path.resolve(options.path, file));
         this.config = { ...this.config, ...module.default() };
       }
     });
-    console.log(this.config);
   }
 
   getConfig(path: string) {
