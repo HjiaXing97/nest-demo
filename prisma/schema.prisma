@@ -32,7 +32,7 @@ model article {
   id         Int       @id @default(autoincrement()) @db.UnsignedInt
   title      String
   content    String    @db.Text
-  thump      String
+  thump      String?
   createTime DateTime  @default(now())
   updateTime DateTime  @updatedAt
   category   category? @relation(fields: [categoryId], references: [id])
