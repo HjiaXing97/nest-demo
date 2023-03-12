@@ -1,8 +1,8 @@
 import { Random } from 'mockjs';
 import create from '../helpr';
 
-function user() {
-  create(20, async (prisma) => {
+export default async function user() {
+  await create(20, async (prisma) => {
     await prisma.user.create({
       data: {
         email: Random.email(),
@@ -13,5 +13,3 @@ function user() {
     });
   });
 }
-
-export default user;
