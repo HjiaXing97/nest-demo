@@ -1,12 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PrismaClient } from '@prisma/client';
+import { HdPipe } from './hd/hd.pipe';
 
 @Controller()
 export class AppController {
-  constructor(private readonly configService: ConfigService) {}
+  prisma: PrismaClient;
 
-  @Get()
-  get() {
-    return this.configService.get('DATABASE_URL');
+  constructor(private readonly configService: ConfigService) {
+    this.prisma = new PrismaClient();
+  }
+
+  @Get(':id')
+  get(@Param('id', HdPipe) id: number) {
+    return this.prisma.user.findUnique({
+      where: {
+        id: Number(id)
+      }
+    });
   }
 }
