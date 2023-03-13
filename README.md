@@ -52,3 +52,23 @@
      },
   ```
 - 执行npx prisma db seed 命令就会自动创建mock数据
+
+### 管道验证安装包
+
+- class-transformer   数据转化
+```ts
+ import { plainToInstance } from 'class-transformer';
+ //通过plainToInstance方法将数据进行转化
+ const obj = plainToInstance(metadata.metatype, value);
+```
+- class-validator   数据验证
+```ts
+import { IsNotEmpty } from 'class-validator';
+
+export default class CreateArticleDto {
+  @IsNotEmpty() //非空判断
+  title: string;
+  @IsNotEmpty()
+  content: string;
+}
+```
