@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { HdPipe } from './hd/hd.pipe';
@@ -12,11 +12,16 @@ export class AppController {
   }
 
   @Get(':id')
-  get(@Param('id', HdPipe) id: number) {
+  get(@Param('id') id: number) {
     return this.prisma.user.findUnique({
       where: {
         id: Number(id)
       }
     });
+  }
+
+  @Post('add')
+  add(@Body(HdPipe) dto: Record<string, any>) {
+    return dto;
   }
 }
