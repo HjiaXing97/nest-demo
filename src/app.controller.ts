@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
-import { HdPipe } from './hd/hd.pipe';
 import CreateArticleDto from './dto/creata.article.dto';
 
 @Controller()
@@ -22,7 +21,13 @@ export class AppController {
   }
 
   @Post('add')
-  add(@Body(HdPipe) dto: CreateArticleDto) {
+  add(@Body() dto: CreateArticleDto) {
+    this.prisma.article.create({
+      data: {
+        title: dto.title,
+        content: dto.content
+      }
+    });
     return dto;
   }
 }
