@@ -22,12 +22,6 @@ export class AppController {
 
   @Post('add')
   add(@Body() dto: CreateArticleDto) {
-    this.prisma.article.create({
-      data: {
-        title: dto.title,
-        content: dto.content
-      }
-    });
     return dto;
   }
 }
