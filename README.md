@@ -108,3 +108,58 @@ export class registerDto {
   password_confirmed: string;
 }
 ```
+
+### 使用装饰器进行自定义验证
+
+- 创建一个装饰器验证函数
+
+```ts
+import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+import { PrismaClient } from '@prisma/client';
+
+/**
+ * @param table  表名
+ * @param validationOptions  配置项
+ */
+function IsNotExistsRule(table: string, validationOptions: ValidationOptions) {
+  return function (object: Record<string, any>, propertyName: string) {
+    // @ts-ignore
+    registerDecorator({
+      name: 'IsNotExistsRule',
+      target: object.constructor,
+      propertyName: propertyName, //验证字段
+      constraints: [table],
+      options: validationOptions,
+      validator: {
+        async validate(value: any, validationArguments?: ValidationArguments): Promise<boolean> {
+          const prisma = new PrismaClient();
+          const user = await prisma.user.findFirst({
+            where: {
+              [propertyName]: validationArguments.value
+            }
+          });
+          return !Boolean(user);
+        }
+      }
+    });
+  };
+}
+
+export default IsNotExistsRule;
+
+```
+
+- 在校验类中使用该装饰器
+```ts
+export class registerDto {
+  @IsNotEmpty({ message: '用户名不能为空' })
+  @isNotExistsRule('user', { message: '用户已存在' })  //使用自定义装饰器
+  username: string;
+  @IsNotEmpty({ message: '密码' })
+  password: string;
+  @IsNotEmpty({ message: '确认密码' })
+  @Validate(IsConfirmedRule)
+  password_confirmed: string;
+}
+
+```
