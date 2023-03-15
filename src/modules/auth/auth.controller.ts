@@ -10,5 +10,7 @@ export class AuthController {
     return this.authService.PostRegister(dto);
   }
   @Post('login')
-  PostLogin(@Body() dto: AuthUserRegisterDto) {}
+  async PostLogin(@Body() dto: AuthUserRegisterDto) {
+    return await this.authService.PostLogin(dto);
+  }
 }

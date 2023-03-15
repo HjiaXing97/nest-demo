@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { PrismaClient, user } from '@prisma/client';
 import { AuthUserRegisterDto } from '../../dto/auth.user.dto';
-import { hash } from 'argon2';
+import { hash, verify } from 'argon2';
 
 @Injectable()
 export class PrismaService {
@@ -14,5 +14,19 @@ export class PrismaService {
         real_password: password
       }
     });
+  }
+
+  async userLogin({ username, password }: AuthUserRegisterDto) {
+    const user: user = await this.prisma.user.findUnique({
+      where: {
+        username: username
+      }
+    });
+
+    if (!user) throw new BadRequestException('用户不存在');
+    const psMatch = await verify(user.password, password);
+    if (!psMatch) throw new BadRequestException('密码错误');
+
+    return user;
   }
 }

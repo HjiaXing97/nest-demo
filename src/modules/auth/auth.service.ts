@@ -8,8 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(private readonly prismaService: PrismaService, private readonly jwt: JwtService) {}
   async PostRegister({ username, password }: AuthUserRegisterDto) {
-    const user = await this.prismaService.createUser({ username, password });
-    return await this.getToken(user);
+    return await this.prismaService.createUser({ username, password });
   }
 
   async getToken({ username, id }: user) {
@@ -21,5 +20,9 @@ export class AuthService {
     };
   }
 
-  async PostLogin({ username, password }: AuthUserRegisterDto) {}
+  async PostLogin({ username, password }: AuthUserRegisterDto) {
+    const { username: name, id } = await this.prismaService.userLogin({ username, password });
+    // @ts-ignore
+    return this.getToken({ username: name, id: id });
+  }
 }

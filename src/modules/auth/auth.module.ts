@@ -16,7 +16,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: (config: ConfigService) => {
         return {
           secret: config.get('TOKEN_SECRET'),
-          signOptions: { expiresIn: '1d' }
+          signOptions: { expiresIn: '2d' }
         };
       }
     })
