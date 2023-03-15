@@ -18,7 +18,7 @@
 1. npx prisma migrate dev
 2. 执行该命令后会创建迁移文件并在数据库中生产对应的表
 
-###生成测试数据
+### 生成测试数据
 
 - 在prisma文件夹下创建seeds文件夹 创建seed.ts 文件
   ```javascript
@@ -70,5 +70,41 @@ export default class CreateArticleDto {
   title: string;
   @IsNotEmpty()
   content: string;
+}
+```
+
+### 自定义校验规则
+
+- 创建一个规则校验文件
+```ts
+import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
+
+@ValidatorConstraint()
+class IsConfirmedRule implements ValidatorConstraintInterface {
+  validate(value: string, validationArguments?: ValidationArguments): Promise<boolean> | boolean {
+    // 返回true校验成功，否则校验失败
+    return value === validationArguments.object['password'];
+  }
+
+  defaultMessage(validationArguments?: ValidationArguments): string {
+    return '对比失败';
+  }
+}
+
+export default IsConfirmedRule;
+
+```
+
+- 创建一个校验dto类
+
+```ts
+export class registerDto {
+  @IsNotEmpty({ message: '用户名不能为空' })
+  username: string;
+  @IsNotEmpty({ message: '密码' })
+  password: string;
+  @IsNotEmpty({ message: '确认密码' })
+  @Validate(IsConfirmedRule)  //使用自定义校验
+  password_confirmed: string;
 }
 ```

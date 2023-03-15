@@ -1,4 +1,5 @@
-import { IsNotEmpty, Length } from 'class-validator';
+import { IsNotEmpty, Length, Validate } from 'class-validator';
+import IsConfirmedRule from '../rules/is-confirmed-rule';
 
 export default class CreateArticleDto {
   @IsNotEmpty({ message: '标题不能为空' }) //非空判断
@@ -6,4 +7,14 @@ export default class CreateArticleDto {
   title: string;
   @IsNotEmpty({ message: '内容不能为空' })
   content: string;
+}
+
+export class registerDto {
+  @IsNotEmpty({ message: '用户名不能为空' })
+  username: string;
+  @IsNotEmpty({ message: '密码' })
+  password: string;
+  @IsNotEmpty({ message: '确认密码' })
+  @Validate(IsConfirmedRule)
+  password_confirmed: string;
 }

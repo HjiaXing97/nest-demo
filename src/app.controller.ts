@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
-import CreateArticleDto from './dto/creata.article.dto';
+import CreateArticleDto, { registerDto } from './dto/creata.article.dto';
 
 @Controller()
 export class AppController {
@@ -22,6 +22,11 @@ export class AppController {
 
   @Post('add')
   add(@Body() dto: CreateArticleDto) {
+    return dto;
+  }
+
+  @Post('register')
+  register(@Body() dto: registerDto) {
     return dto;
   }
 }
