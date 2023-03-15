@@ -7,7 +7,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('register')
   PostRegister(@Body() dto: AuthUserRegisterDto) {
-    this.authService.PostRegister(dto);
-    return dto;
+    return this.authService.PostRegister(dto);
   }
 }
