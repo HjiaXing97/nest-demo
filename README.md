@@ -1,73 +1,165 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+### 安装primsa
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+1. pnpm add prisma-binding @prisma/client mockjs argon2
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+2. pnpm add -D prisma typescript @types/node @types/mockjs
 
-## Description
+### 初始化primsa工具
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. npx prisma init
+2. 执行命令后会创建primsa文件夹和.env文件
 
-## Installation
+### 修改primsa数据库配置
 
-```bash
-$ pnpm install
+1. DATABASE_URL="sqlName://username:password@host:3306/database"
+
+### 生成迁移文件
+
+1. npx prisma migrate dev
+2. 执行该命令后会创建迁移文件并在数据库中生产对应的表
+
+### 生成测试数据
+
+- 在prisma文件夹下创建seeds文件夹 创建seed.ts 文件
+  ```javascript
+        import user from './seeds/user';
+        async function run() { 
+            await user();
+        };
+        run().then(() => {});
+  ```
+- 在seeds文件夹下创建user文件用于mock数据
+  ```javascript
+       import { PrismaClient } from '@prisma/client';
+        const prisma = new PrismaClient();
+                    async function user() {
+                    await prisma.user.create({
+                    data: {
+                    email: Random.email(),
+                    username: Random.cname(),
+                    password: Random.string(),
+                    github: Random.url()
+               }
+           });
+        }
+        export default user;
+  ```
+
+- 在package.json 文件中创建命令
+  ```
+  "prisma": {
+        "seed": "ts-node prisma/seed.ts"
+     },
+  ```
+- 执行npx prisma db seed 命令就会自动创建mock数据
+
+### 管道验证安装包
+
+- class-transformer   数据转化
+```ts
+ import { plainToInstance } from 'class-transformer';
+ //通过plainToInstance方法将数据进行转化
+ const obj = plainToInstance(metadata.metatype, value);
+```
+- class-validator   数据验证
+```ts
+import { IsNotEmpty } from 'class-validator';
+
+export default class CreateArticleDto {
+  @IsNotEmpty() //非空判断
+  title: string;
+  @IsNotEmpty()
+  content: string;
+}
 ```
 
-## Running the app
+### 自定义校验规则
 
-```bash
-# development
-$ pnpm run start
+- 创建一个规则校验文件
+```ts
+import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
-# watch mode
-$ pnpm run start:dev
+@ValidatorConstraint()
+class IsConfirmedRule implements ValidatorConstraintInterface {
+  validate(value: string, validationArguments?: ValidationArguments): Promise<boolean> | boolean {
+    // 返回true校验成功，否则校验失败
+    return value === validationArguments.object['password'];
+  }
 
-# production mode
-$ pnpm run start:prod
+  defaultMessage(validationArguments?: ValidationArguments): string {
+    return '对比失败';
+  }
+}
+
+export default IsConfirmedRule;
+
 ```
 
-## Test
+- 创建一个校验dto类
 
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+```ts
+export class registerDto {
+  @IsNotEmpty({ message: '用户名不能为空' })
+  username: string;
+  @IsNotEmpty({ message: '密码' })
+  password: string;
+  @IsNotEmpty({ message: '确认密码' })
+  @Validate(IsConfirmedRule)  //使用自定义校验
+  password_confirmed: string;
+}
 ```
 
-## Support
+### 使用装饰器进行自定义验证
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- 创建一个装饰器验证函数
 
-## Stay in touch
+```ts
+import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+import { PrismaClient } from '@prisma/client';
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+/**
+ * @param table  表名
+ * @param validationOptions  配置项
+ */
+function IsNotExistsRule(table: string, validationOptions: ValidationOptions) {
+  return function (object: Record<string, any>, propertyName: string) {
+    // @ts-ignore
+    registerDecorator({
+      name: 'IsNotExistsRule',
+      target: object.constructor,
+      propertyName: propertyName, //验证字段
+      constraints: [table],
+      options: validationOptions,
+      validator: {
+        async validate(value: any, validationArguments?: ValidationArguments): Promise<boolean> {
+          const prisma = new PrismaClient();
+          const user = await prisma.user.findFirst({
+            where: {
+              [propertyName]: validationArguments.value
+            }
+          });
+          return !Boolean(user);
+        }
+      }
+    });
+  };
+}
 
-## License
+export default IsNotExistsRule;
 
-Nest is [MIT licensed](LICENSE).
+```
+
+- 在校验类中使用该装饰器
+```ts
+export class registerDto {
+  @IsNotEmpty({ message: '用户名不能为空' })
+  @isNotExistsRule('user', { message: '用户已存在' })  //使用自定义装饰器
+  username: string;
+  @IsNotEmpty({ message: '密码' })
+  password: string;
+  @IsNotEmpty({ message: '确认密码' })
+  @Validate(IsConfirmedRule)
+  password_confirmed: string;
+}
+
+```
