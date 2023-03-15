@@ -20,4 +20,6 @@ export class AuthService {
       })
     };
   }
+
+  async PostLogin({ username, password }: AuthUserRegisterDto) {}
 }

@@ -9,4 +9,6 @@ export class AuthController {
   PostRegister(@Body() dto: AuthUserRegisterDto) {
     return this.authService.PostRegister(dto);
   }
+  @Post('login')
+  PostLogin(@Body() dto: AuthUserRegisterDto) {}
 }
