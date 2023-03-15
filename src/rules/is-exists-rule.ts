@@ -1,27 +1,27 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 import { PrismaClient } from '@prisma/client';
 
-/**
- * @param table  表名
- * @param validationOptions  配置项
- */
-export default function IsNotExistsRule(table: string, validationOptions: ValidationOptions) {
+export default function IsExistsRule(table: string, validationOptions: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
-      name: 'IsNotExistsRule',
+      name: 'IsExistsRule',
       target: object.constructor,
-      propertyName: propertyName, //验证字段
+      propertyName: propertyName,
       constraints: [table],
       options: validationOptions,
       validator: {
         async validate(value: any, validationArguments?: ValidationArguments): Promise<boolean> {
           const prisma = new PrismaClient();
-          const user = await prisma.user.findFirst({
+          const info = await prisma.user.findFirst({
             where: {
               [propertyName]: validationArguments.value
             }
           });
-          return !Boolean(user);
+
+          return Boolean(info);
+        },
+        defaultMessage(validationArguments?: ValidationArguments): string {
+          return '';
         }
       }
     });

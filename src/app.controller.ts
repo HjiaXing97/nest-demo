@@ -2,12 +2,14 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import CreateArticleDto, { registerDto } from './dto/creata.article.dto';
+import { AuthLoginDto } from './dto/auth.login.dto';
+import { AppService, IUserInfo } from './app.service';
 
 @Controller()
 export class AppController {
   prisma: PrismaClient;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly configService: ConfigService, private readonly appService: AppService) {
     this.prisma = new PrismaClient();
   }
 
@@ -26,7 +28,13 @@ export class AppController {
   }
 
   @Post('register')
-  register(@Body() dto: registerDto) {
+  async register(@Body() dto: registerDto) {
+    await this.appService.register(dto as any as IUserInfo);
     return dto;
+  }
+
+  @Post('login')
+  login(@Body() dto: AuthLoginDto) {
+    return this.appService.login(dto);
   }
 }
