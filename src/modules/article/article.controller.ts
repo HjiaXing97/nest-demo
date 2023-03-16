@@ -9,6 +9,7 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
+  //创建文章
   @Post()
   create(
     @Body()
@@ -16,17 +17,17 @@ export class ArticleController {
   ) {
     return this.articleService.create(createArticleDto);
   }
-
+  //查询全部
   @Get()
   async findAll() {
     return await this.articleService.findAll();
   }
-
+  //根据id获取文章
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.articleService.findOne(+id);
   }
-
+  //更新
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -36,6 +37,7 @@ export class ArticleController {
     return this.articleService.update(+id, updateArticleDto);
   }
 
+  //删除文章
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.articleService.remove(+id);

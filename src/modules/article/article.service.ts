@@ -18,8 +18,8 @@ export class ArticleService {
 
   async findAll(curPage = 1, pageSize = 10) {
     const data = await this.prisma.article.findMany({
-      skip: (curPage - 1) * pageSize,
-      take: pageSize
+      skip: (curPage - 1) * pageSize, //列表起始-结束
+      take: pageSize //页码
     });
     const total = await this.prisma.article.count();
     return {
@@ -33,15 +33,19 @@ export class ArticleService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} article`;
+  async findOne(id: number) {
+    return await this.prisma.article.findFirst({
+      where: { id }
+    });
   }
 
   update(id: number, updateArticleDto: UpdateArticleDto) {
     return `This action updates a #${id} article`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  async remove(id: number) {
+    return await this.prisma.article.delete({
+      where: { id }
+    });
   }
 }
