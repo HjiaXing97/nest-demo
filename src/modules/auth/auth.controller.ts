@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthUserRegister } from '../../dto/auth.user.dto';
+import { AuthUserLoginDto, AuthUserRegisterDto } from '../../dto/auth.user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -8,13 +8,13 @@ export class AuthController {
 
   /* 注册接口 */
   @Post('register')
-  userRegister(@Body() body: AuthUserRegister) {
-    return body;
+  async userRegister(@Body() body: AuthUserRegisterDto) {
+    return await this.authService.userRegister(body);
   }
 
   /* 登录接口 */
   @Post('login')
-  userLogin(@Body() body: any) {
-    return body;
+  async userLogin(@Body() body: AuthUserLoginDto) {
+    return await this.authService.userLogin(body);
   }
 }

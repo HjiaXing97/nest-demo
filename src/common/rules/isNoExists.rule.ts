@@ -1,6 +1,11 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 import { PrismaClient } from '@prisma/client';
 
+/**
+ * @param {String} table 表名
+ * @param {Object} validate 校验配置项
+ */
+
 export default function (table: string, validate: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({

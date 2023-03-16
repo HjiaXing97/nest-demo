@@ -14,7 +14,7 @@ model user {
   id            Int      @id @default(autoincrement()) @db.UnsignedInt
   username      String   @unique
   real_name     String
-  paddword      String
+  password      String
   real_password String
   auth          String?
   phone         String?
