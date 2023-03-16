@@ -1,15 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { PrismaService } from 'modules/prisma/prisma.service';
 
 @Injectable()
 export class ArticleService {
-  create(createArticleDto: CreateArticleDto) {
-    return 'This action adds a new article';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createArticleDto: CreateArticleDto) {
+    return await this.prisma.article.create({
+      data: {
+        title: createArticleDto.title,
+        content: createArticleDto.content
+      }
+    });
   }
 
-  findAll() {
-    return `This action returns all article`;
+  async findAll(curPage = 1, pageSize = 10) {
+    const data = await this.prisma.article.findMany({
+      skip: (curPage - 1) * pageSize,
+      take: pageSize
+    });
+    const total = await this.prisma.article.count();
+    return {
+      data,
+      pageInfo: {
+        curPage,
+        pageSize,
+        total,
+        totalPage: Math.ceil(total / pageSize)
+      }
+    };
   }
 
   findOne(id: number) {
