@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { AuthUserLoginDto, AuthUserRegisterDto } from '../../dto/auth.user.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { AuthUserLoginDto, AuthUserRegisterDto } from 'dto/auth.user.dto';
+import { PrismaService } from 'modules/prisma/prisma.service';
 import { hash, verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 
