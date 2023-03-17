@@ -42,7 +42,6 @@ export class AuthService {
     return {
       token: await this.jwt.signAsync({
         username,
-
         subarray: id
       })
     };
