@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'modules/prisma/prisma.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { PrismaService } from 'modules/prisma/prisma.service';
+import { SearchArticleDto } from 'modules/article/dto/search-article.dto';
 
 @Injectable()
 export class ArticleService {
@@ -17,12 +18,19 @@ export class ArticleService {
     });
   }
 
-  async findAll(curPage = 1, pageSize = 10) {
+  async findAll({ categoryId, pageSize, curPage }: SearchArticleDto) {
     const data = await this.prisma.article.findMany({
       skip: (curPage - 1) * pageSize, //列表起始-结束
-      take: pageSize //页码
+      take: pageSize, //页码
+      where: {
+        categoryId
+      }
     });
-    const total = await this.prisma.article.count();
+    const total = await this.prisma.article.count({
+      where: {
+        categoryId
+      }
+    });
     return {
       data,
       pageInfo: {

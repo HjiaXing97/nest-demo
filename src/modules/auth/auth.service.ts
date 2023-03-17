@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { hash, verify } from 'argon2';
 import { AuthUserLoginDto, AuthUserRegisterDto } from 'dto/auth.user.dto';
 import { PrismaService } from 'modules/prisma/prisma.service';
-import { hash, verify } from 'argon2';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService, private jwt: JwtService) {}
+
   async userRegister(dto: AuthUserRegisterDto) {
     const user = await this.prisma.user.create({
       data: {
@@ -16,6 +17,7 @@ export class AuthService {
         password: await hash(dto.password) //密码加密
       }
     });
+
     delete user.password;
     delete user.real_password;
     return user;
@@ -31,6 +33,7 @@ export class AuthService {
     if (!user) throw new BadRequestException('用户不存在');
 
     const hashPassword = await verify(user.password, dto.password); //解密
+
     if (!hashPassword) throw new BadRequestException('密码错误');
     else return await this.generateToken(user.id, user.username);
   }
@@ -39,6 +42,7 @@ export class AuthService {
     return {
       token: await this.jwt.signAsync({
         username,
+
         subarray: id
       })
     };

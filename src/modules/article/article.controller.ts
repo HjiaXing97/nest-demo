@@ -12,6 +12,7 @@ import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { SearchArticleDto } from 'modules/article/dto/search-article.dto';
 
 @Controller('article')
 export class ArticleController {
@@ -27,9 +28,9 @@ export class ArticleController {
   }
 
   //查询全部
-  @Get()
-  async findAll() {
-    return await this.articleService.findAll();
+  @Post('listPage')
+  async findAll(@Body() param: SearchArticleDto) {
+    return await this.articleService.findAll({ ...param });
   }
 
   //根据id获取文章
