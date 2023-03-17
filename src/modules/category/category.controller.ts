@@ -5,20 +5,20 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  UseGuards
+  Post
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { Auth } from 'modules/decorators/auth.decorator';
+import { RoleEnum } from 'modules/decorators/RoleEnum';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'))
+  @Auth(RoleEnum.ADMIN)
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
