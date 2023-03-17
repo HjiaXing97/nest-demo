@@ -11,7 +11,8 @@ export class ArticleService {
     return await this.prisma.article.create({
       data: {
         title: createArticleDto.title,
-        content: createArticleDto.content
+        content: createArticleDto.content,
+        categoryId: createArticleDto.categoryId
       }
     });
   }
@@ -39,8 +40,13 @@ export class ArticleService {
     });
   }
 
-  update(id: number, updateArticleDto: UpdateArticleDto) {
-    return `This action updates a #${id} article`;
+  async update(id: number, updateArticleDto: UpdateArticleDto) {
+    return await this.prisma.article.update({
+      where: {
+        id
+      },
+      data: updateArticleDto
+    });
   }
 
   async remove(id: number) {

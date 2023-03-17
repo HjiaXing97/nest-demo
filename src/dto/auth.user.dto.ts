@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
-import IsNoExistsRule from '../common/rules/isNoExists.rule';
-import IsConfirmRule from '../common/rules/isConfirm.rule';
+import IsNoExistsRule from 'common/rules/isNoExists.rule';
+import IsConfirmRule from 'common/rules/isConfirm.rule';
 
 class AuthUserRegisterDto {
   @IsNotEmpty({ message: '用户名不能为空' })

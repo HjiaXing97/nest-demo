@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post
+} from '@nestjs/common';
 
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -17,16 +25,19 @@ export class ArticleController {
   ) {
     return this.articleService.create(createArticleDto);
   }
+
   //查询全部
   @Get()
   async findAll() {
     return await this.articleService.findAll();
   }
+
   //根据id获取文章
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.articleService.findOne(+id);
   }
+
   //更新
   @Patch(':id')
   update(

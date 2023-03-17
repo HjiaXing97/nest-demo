@@ -17,11 +17,12 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "esModuleInterop": true,
     "paths": {
       "@/*": ["src/*"],
+      "dto/*": ["src/dto/*"],
       "modules/*": ["src/modules/*"],
-      "dto/*": ["src/dto/*"]
+      "common/*": ["src/common/*"]
+
     }
   }
 }

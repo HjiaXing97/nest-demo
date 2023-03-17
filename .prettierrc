@@ -6,7 +6,7 @@
   "htmlWhitespaceSensitivity": "css",
   "insertPragma": false,
   "jsxSingleQuote": false,
-  "printWidth": 120,
+  "printWidth": 80,
   "proseWrap": "never",
   "quoteProps": "as-needed",
   "requirePragma": false,
@@ -17,5 +17,5 @@
   "useTabs": false,
   "vueIndentScriptAndStyle": false,
   "singleAttributePerLine": false,
-  "endOfLine": "lf"
+  "endOfLine": "crlf"
 }
